@@ -3,7 +3,16 @@
 A simple plugin for freezing a player or teammate using a smoke grenade, removes the smoke effect and adds a radius particle around frozen players, searches for players in a radius that you set yourself in the Config file.
 
 
+# Actuall Features
+
+
+• Smoke grenade is Freezing Grenade
+• Decoy grenade is Toxic Grenade
+
+
+
 #Config
+
 
 ```JSON
   "FreezeModel": "particles/ui/annotation/ui_annotation_line_segment_arrow.vpcf",
