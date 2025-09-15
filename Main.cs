@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.UserMessages;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 
@@ -59,5 +60,5 @@ public partial class Main : BasePlugin, IPluginConfig<ConfigSounds>
                 }
             }
         });
-    }
+    }    
 }

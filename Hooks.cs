@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
@@ -46,6 +47,11 @@ public partial class Main
                         Utilities.SetStateChanged(pawn, "CBaseModelEntity", "m_clrRender");
                     });
                 }
+                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, true);
+            }
+            else
+            {
+                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, false);
             }
         }
         for (int i = 0; i < points; i++)
@@ -60,8 +66,6 @@ public partial class Main
         }
         var entity = Utilities.GetEntityFromIndex<CSmokeGrenadeProjectile>(@event.Entityid);
         if (entity != null) {
-            //entity.EmitSound(null!, null, 0.0f, 0.0f);
-            //entity.ExplosionSound = null!;
             entity.Remove();
         }
 

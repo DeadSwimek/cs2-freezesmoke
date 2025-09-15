@@ -37,12 +37,38 @@ public partial class Main
         particle.DispatchSpawn();
         particle.AcceptInput("Start");
 
-        AddTimer(duration, () => { particle.Remove(); });
+        AddTimer(duration, () => { if(particle != null || particle!.IsValid) particle.Remove(); });
+    }
+    public void ParticleSmokeCreate(Vector startPos, float duration, bool player_found)
+    {
+        var particle = Utilities.CreateEntityByName<CEnvParticleGlow>("env_particle_glow");
+        if (particle == null)
+        {
+            Server.PrintToConsole(" > Error to create Particle - Functions -> ParticleSmokeCreate");
+            return;
+        }
+        particle.StartActive = true;
+        particle.EffectName = Config.FreezeSmokeParticle;
+        particle.AlphaScale = 0.1f;
+        particle.RadiusScale = 0.5f;
+
+        if(player_found) { particle.ColorTint = Color.Blue; }else { particle.ColorTint = Color.Gray; }
+
+        particle.RenderFX = RenderFx_t.kRenderFxFadeIn;
+        particle.RenderMode = RenderMode_t.kRenderGlow;
+
+        particle.Teleport(startPos);
+
+        particle.DispatchSpawn();
+        particle.AcceptInput("Start");
+
+        AddTimer(duration, () => { if (particle != null || particle!.IsValid) particle.Remove(); });
     }
 
     public void PrecacheResource(ResourceManifest mainfest)
     {
         mainfest.AddResource(Config.FreezeModel);
         mainfest.AddResource(Config.FreezeSound);
+        mainfest.AddResource(Config.FreezeSmokeParticle);
     }
 }
