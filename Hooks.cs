@@ -8,6 +8,80 @@ namespace Core;
 
 public partial class Main
 {
+    HookResult EventDecoyFiring(EventDecoyFiring @event, GameEventInfo inf)
+    {
+        inf.DontBroadcast = true;
+
+
+        float radius = Config.ToxicRadius;
+        float duration = Config.ToxicLifeTime;
+        bool enable = Config.ToxicEnable;
+        string sound = Config.InToxicSound;
+        if (!enable) return HookResult.Continue;
+        int points = 20;
+
+        float centerX = (float)@event.X;
+        float centerY = (float)@event.Y;
+        float centerZ = (float)@event.Z;
+        Vector center = new Vector(centerX, centerY, centerZ);
+
+        foreach (var player in Utilities.GetPlayers())
+        {
+            var playerOrigin = player.PlayerPawn?.Value!.AbsOrigin!;
+            float dx = center.X - playerOrigin.X;
+            float dy = center.Y - playerOrigin.Y;
+            float dz = center.Z - playerOrigin.Z;
+            float distance = MathF.Sqrt(dx * dx + dy * dy + dz * dz);
+
+            if (distance <= radius)
+            {
+                if (player.PawnIsAlive)
+                {
+                    var pawn = player.PlayerPawn!.Value!;
+                    if(Config.ToxicFreezeEnable)
+                        Freeze[player.Index] = true;
+                    Toxic[player.Index] = true;
+                    AddTimer(1.0f, () =>
+                    {
+                        if (Toxic[player.Index] == true)
+                        {
+                            player.ExecuteClientCommand($"play {sound}");
+                            int hp = pawn.Health;
+                            pawn.Health = hp - Config.DamageToxicPerSec;
+                            Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iHealth");
+                        }
+                    }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT);
+                    AddTimer(duration, () => {
+                        if (Config.ToxicFreezeEnable)
+                            Freeze[player.Index] = false;
+                        Toxic[player.Index] = false;
+                    });
+                }
+                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, Color.Green);
+            }
+            else
+            {
+                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, Color.Gray);
+            }
+        }
+        for (int i = 0; i < points; i++)
+        {
+            double angle = 2 * Math.PI * i / points;
+
+            float x = centerX + (float)(radius * Math.Cos(angle));
+            float z = centerZ;
+            float y = centerY + (float)(radius * Math.Sin(angle));
+
+            ParticleCreate(new Vector(x, y, z), new Vector(x, y, z), duration, Color.Green);
+        }
+        var entity = Utilities.GetEntityFromIndex<CDecoyProjectile>(@event.Entityid);
+        if (entity != null)
+        {
+            entity.Remove();
+        }
+
+        return HookResult.Continue;
+    }
     HookResult EventSmokegrenadeDetonate(EventSmokegrenadeDetonate @event, GameEventInfo inf)
     {
         inf.DontBroadcast = true;
@@ -47,11 +121,11 @@ public partial class Main
                         Utilities.SetStateChanged(pawn, "CBaseModelEntity", "m_clrRender");
                     });
                 }
-                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, true);
+                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, Color.Blue);
             }
             else
             {
-                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, false);
+                ParticleSmokeCreate(new Vector(centerX, centerY, centerZ), duration, Color.Gray);
             }
         }
         for (int i = 0; i < points; i++)
@@ -62,7 +136,7 @@ public partial class Main
             float z = centerZ;
             float y = centerY +(float)(radius * Math.Sin(angle));
 
-            ParticleCreate(new Vector(x, y, z), new Vector(x, y, z), duration);
+            ParticleCreate(new Vector(x, y, z), new Vector(x, y, z), duration, Color.Blue);
         }
         var entity = Utilities.GetEntityFromIndex<CSmokeGrenadeProjectile>(@event.Entityid);
         if (entity != null) {
@@ -78,6 +152,7 @@ public partial class Main
 
         FreezeTimer[player.Index]?.Kill();
         Freeze[player.Index] = false;
+        Toxic[player.Index] = false;
 
         return HookResult.Continue;
     }
@@ -85,6 +160,15 @@ public partial class Main
     {
         KillAllTimers();
 
+        return HookResult.Continue;
+    }
+    HookResult EventRoundEnd(EventRoundEnd @event, GameEventInfo info)
+    {
+        foreach (var kvp in Particle.ToList()) 
+        {
+            kvp.Value?.Kill();
+            Particle.Remove(kvp.Key);
+        }
         return HookResult.Continue;
     }
     HookResult EventPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
@@ -97,6 +181,7 @@ public partial class Main
             return HookResult.Continue;
 
         Freeze[player.Index] = false;
+        Toxic[player.Index] = false;
         FreezeTimer[player.Index]?.Kill();
 
         return HookResult.Continue;

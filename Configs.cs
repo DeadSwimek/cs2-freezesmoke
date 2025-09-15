@@ -11,5 +11,11 @@ namespace Core
         [JsonPropertyName("FreezeRadius")] public float FreezeRadius { get; set; } = 60f;
         [JsonPropertyName("FreezeLifeTime")] public float FreezeLifeTime { get; set; } = 10f;
         [JsonPropertyName("FreezeEnable")] public bool FreezeEnable { get; set; } = true;
+        [JsonPropertyName("ToxicEnable")] public bool ToxicEnable { get; set; } = true;
+        [JsonPropertyName("DamageToxicPerSec")] public int DamageToxicPerSec { get; set; } = 10;
+        [JsonPropertyName("ToxicRadius")] public float ToxicRadius { get; set; } = 60f;
+        [JsonPropertyName("ToxicLifetTime")] public float ToxicLifeTime { get; set; } = 5f;
+        [JsonPropertyName("ToxicFreezeEnable")] public bool ToxicFreezeEnable { get; set; } = true;
+        [JsonPropertyName("InToxicSound")] public string InToxicSound { get; set; } = "sounds/ui/lobby_notification_chat.vsnd";
     }
 }

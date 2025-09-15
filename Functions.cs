@@ -9,7 +9,7 @@ namespace Core;
 
 public partial class Main
 {
-    public void ParticleCreate(Vector startPos, Vector endPos, float duration, QAngle rot = null!, bool trigger = false)
+    public void ParticleCreate(Vector startPos, Vector endPos, float duration, Color color, QAngle rot = null!, bool trigger = false)
     {
         var particle = Utilities.CreateEntityByName<CEnvParticleGlow>("env_particle_glow");
         if (particle == null)
@@ -19,7 +19,7 @@ public partial class Main
         }
         particle.StartActive = true;
         particle.EffectName = Config.FreezeModel;
-        particle.ColorTint = Color.Blue;
+        particle.ColorTint = color;
         particle.RenderMode = RenderMode_t.kRenderGlow;
 
         if (rot != null)
@@ -37,9 +37,9 @@ public partial class Main
         particle.DispatchSpawn();
         particle.AcceptInput("Start");
 
-        AddTimer(duration, () => { if(particle != null || particle!.IsValid) particle.Remove(); });
+        Particle[particle.Index] = AddTimer(duration, () => { SafeRemove(particle); });
     }
-    public void ParticleSmokeCreate(Vector startPos, float duration, bool player_found)
+    public void ParticleSmokeCreate(Vector startPos, float duration, Color color)
     {
         var particle = Utilities.CreateEntityByName<CEnvParticleGlow>("env_particle_glow");
         if (particle == null)
@@ -52,7 +52,7 @@ public partial class Main
         particle.AlphaScale = 0.1f;
         particle.RadiusScale = 0.5f;
 
-        if(player_found) { particle.ColorTint = Color.Blue; }else { particle.ColorTint = Color.Gray; }
+        particle.ColorTint = color;
 
         particle.RenderFX = RenderFx_t.kRenderFxFadeIn;
         particle.RenderMode = RenderMode_t.kRenderGlow;
@@ -62,7 +62,7 @@ public partial class Main
         particle.DispatchSpawn();
         particle.AcceptInput("Start");
 
-        AddTimer(duration, () => { if (particle != null || particle!.IsValid) particle.Remove(); });
+        Particle[particle.Index] = AddTimer(duration, () => { SafeRemove(particle); });
     }
 
     public void PrecacheResource(ResourceManifest mainfest)
@@ -70,5 +70,6 @@ public partial class Main
         mainfest.AddResource(Config.FreezeModel);
         mainfest.AddResource(Config.FreezeSound);
         mainfest.AddResource(Config.FreezeSmokeParticle);
+        mainfest.AddResource(Config.InToxicSound);
     }
 }

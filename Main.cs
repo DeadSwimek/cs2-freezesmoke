@@ -10,8 +10,8 @@ public partial class Main : BasePlugin, IPluginConfig<ConfigSounds>
 {
 
     public override string ModuleAuthor => "DeadSwim";
-    public override string ModuleName => "FreezeGrenade";
-    public override string ModuleVersion => "1.0";
+    public override string ModuleName => "SpecialsGrenade";
+    public override string ModuleVersion => "2.0";
 
     public required ConfigSounds Config { get; set; }
 
@@ -20,8 +20,10 @@ public partial class Main : BasePlugin, IPluginConfig<ConfigSounds>
     /// </summary>
     // Player's save public infos
     public static bool?[] Freeze = new bool?[64];
+    public static bool?[] Toxic = new bool?[64];
     // Timers
     public static readonly Timer?[] FreezeTimer = new Timer?[64];
+    Dictionary<uint, Timer> Particle = new();
     /// <summary>
     /// ///////////////////////////////////////
     /// </summary>
@@ -37,7 +39,9 @@ public partial class Main : BasePlugin, IPluginConfig<ConfigSounds>
         RegisterEventHandler<EventRoundStart>(EventRoundStart);
         RegisterEventHandler<EventPlayerSpawn>(EventPlayerSpawn);
         RegisterEventHandler<EventPlayerDisconnect>(EventPlayerDisconnect);
+        RegisterEventHandler<EventRoundEnd>(EventRoundEnd);
         RegisterEventHandler<EventSmokegrenadeDetonate>(EventSmokegrenadeDetonate);
+        RegisterEventHandler<EventDecoyFiring>(EventDecoyFiring);
         RegisterListener<Listeners.OnServerPrecacheResources>(PrecacheResource);
 
         RegisterListener<Listeners.OnMapEnd>(() => { KillAllTimers(); });

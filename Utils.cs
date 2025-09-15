@@ -20,5 +20,10 @@ namespace Core
                 }
             }
         }
+        void SafeRemove(CEntityInstance ent)
+        {
+            if (ent != null && ent.IsValid)
+                ent.Remove();
+        }
     }
 }
