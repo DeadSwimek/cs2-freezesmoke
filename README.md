@@ -15,6 +15,11 @@ A simple plugin for freezing a player or teammate using a smoke grenade, removes
 ## Config
 
 
+`How to set Grenade on permission`
+
+Change `"FreezePermission": null,` from `: null` to `: "@css/basic"` or other permission
+
+
 ```JSON
 {
   "FreezeModel": "particles/ui/annotation/ui_annotation_line_segment_arrow.vpcf",
