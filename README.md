@@ -17,7 +17,7 @@ A simple plugin for freezing a player or teammate using a smoke grenade, removes
 
 `How to set Grenade on permission`
 
-Change `"FreezePermission": null,` from `: null` to `: "@css/basic"` or other permission
+Change from `"FreezePermission": null,` to `"FreezePermission": "@css/basic",` or other permission
 
 
 ```JSON
