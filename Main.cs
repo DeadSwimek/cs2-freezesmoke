@@ -23,6 +23,7 @@ public partial class Main : BasePlugin, IPluginConfig<ConfigSounds>
     public static bool?[] Toxic = new bool?[64];
     // Timers
     public static readonly Timer?[] FreezeTimer = new Timer?[64];
+    public static readonly Timer?[] ToxicTimer = new Timer?[64];
     Dictionary<uint, Timer> Particle = new();
     /// <summary>
     /// ///////////////////////////////////////

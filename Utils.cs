@@ -19,6 +19,14 @@ namespace Core
                     FreezeTimer[i] = null;
                 }
             }
+            for (int i = 0; i < ToxicTimer.Length; i++)
+            {
+                if (ToxicTimer[i] != null)
+                {
+                    ToxicTimer[i]?.Kill();
+                    ToxicTimer[i] = null;
+                }
+            }
         }
         void SafeRemove(CEntityInstance ent)
         {

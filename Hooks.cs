@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
@@ -11,6 +12,17 @@ public partial class Main
     HookResult EventDecoyFiring(EventDecoyFiring @event, GameEventInfo inf)
     {
         inf.DontBroadcast = true;
+
+        var thrower = @event.Userid;
+        if (thrower == null)
+            return HookResult.Continue;
+        if(Config.ToxicPermission != null)
+        {
+            if(!AdminManager.PlayerHasPermissions(thrower, Config.ToxicPermission))
+            {
+                return HookResult.Continue;
+            }
+        }
 
 
         float radius = Config.ToxicRadius;
@@ -41,14 +53,17 @@ public partial class Main
                     if(Config.ToxicFreezeEnable)
                         Freeze[player.Index] = true;
                     Toxic[player.Index] = true;
-                    AddTimer(1.0f, () =>
+                    ToxicTimer[player.Index] = AddTimer(1.0f, () =>
                     {
                         if (Toxic[player.Index] == true)
                         {
                             player.ExecuteClientCommand($"play {sound}");
                             int hp = pawn.Health;
                             pawn.Health = hp - Config.DamageToxicPerSec;
+                            pawn.TakeDamageFlags = TakeDamageFlags_t.DFLAG_SUPPRESS_HEALTH_CHANGES;
+                            pawn.TakesDamage = true;
                             Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iHealth");
+                            if (hp == 0) pawn.CommitSuicide(false, true);
                         }
                     }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT);
                     AddTimer(duration, () => {
@@ -84,6 +99,18 @@ public partial class Main
     }
     HookResult EventSmokegrenadeDetonate(EventSmokegrenadeDetonate @event, GameEventInfo inf)
     {
+
+        var thrower = @event.Userid;
+        if (thrower == null)
+            return HookResult.Continue;
+        if (Config.FreezePermission != null)
+        {
+            if (!AdminManager.PlayerHasPermissions(thrower, Config.FreezePermission))
+            {
+                return HookResult.Continue;
+            }
+        }
+
         inf.DontBroadcast = true;
 
 
@@ -151,6 +178,7 @@ public partial class Main
         if (player == null) return HookResult.Continue;
 
         FreezeTimer[player.Index]?.Kill();
+        ToxicTimer[player.Index]?.Kill();
         Freeze[player.Index] = false;
         Toxic[player.Index] = false;
 
@@ -183,6 +211,7 @@ public partial class Main
         Freeze[player.Index] = false;
         Toxic[player.Index] = false;
         FreezeTimer[player.Index]?.Kill();
+        ToxicTimer[player.Index]?.Kill();
 
         return HookResult.Continue;
     }
