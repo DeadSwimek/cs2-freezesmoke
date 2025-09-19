@@ -16,17 +16,20 @@ A simple plugin for freezing a player or teammate using a smoke grenade, removes
 
 
 ```JSON
+{
   "FreezeModel": "particles/ui/annotation/ui_annotation_line_segment_arrow.vpcf",
   "FreezeSmokeParticle": "particles/explosions_fx/explosion_smokegrenade_init.vpcf",
   "FreezeSound": "sounds/physics/snow/snow_impact_bullet6.vsnd",
   "FreezeRadius": 60,
   "FreezeLifeTime": 10,
   "FreezeEnable": true,
+  "FreezePermission": null,
   "ToxicEnable": true,
-  "ToxicFreezeEnable": true,
   "DamageToxicPerSec": 10,
   "ToxicRadius": 60,
   "ToxicLifetTime": 5,
+  "ToxicPermission": null,
+  "ToxicFreezeEnable": true,
   "InToxicSound": "sounds/ui/lobby_notification_chat.vsnd",
   "ConfigVersion": 1
 }
